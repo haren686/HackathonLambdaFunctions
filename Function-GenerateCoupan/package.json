@@ -1,0 +1,17 @@
+{
+  "name": "function-generatecoupan",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Madhur Kapoor",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.653.0",
+    "axios": "^0.19.2",
+    "mssql": "^6.2.0",
+    "voucher-code-generator": "^1.1.1"
+  }
+}

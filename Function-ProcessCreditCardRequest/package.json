@@ -1,0 +1,16 @@
+{
+  "name": "processcreditcardrequest",
+  "version": "1.0.0",
+  "description": "lambda function triggered from SQS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Harendra Nath",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.656.0",
+    "creditcard-generator": "0.0.7",
+    "mssql": "^6.1.0"
+  }
+}
