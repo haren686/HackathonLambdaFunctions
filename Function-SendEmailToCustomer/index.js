@@ -34,7 +34,7 @@ exports.handler = async (event) => {
         htmlEmailContent = htmlEmailContent + 'Greetings from MY Bank.<br /><br />';
         htmlEmailContent = htmlEmailContent + `You are being offered a new credit card. Please <a href = "${url}">click here</a> to proceed. `;
         htmlEmailContent = htmlEmailContent + '<br /> <br />';
-        htmlEmailContent = htmlEmailContent + 'Sincerely, <br>MY Bank Credit Cards Team."';
+        htmlEmailContent = htmlEmailContent + 'Sincerely, <br>MY Bank Credit Cards Team.';
         htmlEmailContent = htmlEmailContent + '</font></td></tr><tr><td style="text-align:justify"><font face="zurich bt" color="#333333" style="font-size:16px"><br />';
         htmlEmailContent = htmlEmailContent + 'This is a system generated mail. Please do not reply to this e-mail ID.<br /><br />';
         htmlEmailContent = htmlEmailContent + 'Discover a new way of paying your Credit Card bills from your bank account anytime anywhere by using MY Bank iMobile. GPRS users, SMS iMobile to 555555555. <br>';
@@ -61,7 +61,7 @@ exports.handler = async (event) => {
         htmlEmailContent = htmlEmailContent + 'Greetings from MY Bank.<br /><br />';
         htmlEmailContent = htmlEmailContent + `We are pleased to offer you a voucher to enjoy your favorite beverage at ${CafeName}. Please find the details below,<br /><br />`;
         htmlEmailContent = htmlEmailContent + `Voucher Code = ${Voucher} <br /> <br /> Cafe Address : ${CafeAddress} <br /> <br />  <a href="${gmapLink}">Get Direction Here</a> <br /> <br />`;
-        htmlEmailContent = htmlEmailContent + 'Sincerely, <br>MY Bank Credit Cards Team."';
+        htmlEmailContent = htmlEmailContent + 'Sincerely, <br>MY Bank Credit Cards Team.';
         htmlEmailContent = htmlEmailContent + '</font></td></tr><tr><td style="text-align:justify"><font face="zurich bt" color="#333333" style="font-size:16px"><br />';
         htmlEmailContent = htmlEmailContent + 'This is a system generated mail. Please do not reply to this e-mail ID.<br /><br />';
         htmlEmailContent = htmlEmailContent + 'Discover a new way of paying your Credit Card bills from your bank account anytime anywhere by using MY Bank iMobile. GPRS users, SMS iMobile to 555555555. <br>';
@@ -85,7 +85,7 @@ exports.handler = async (event) => {
         htmlEmailContent = htmlEmailContent + `Your new credit card ending with XXXXXXXXXXXX${CreditCardNumber.substring(11,15)} has been credited with 500 bonus points. Your new credit limit is ${CreditLimit}. <br /><br />`;
         htmlEmailContent = htmlEmailContent + 'For any clarification or more information, please call our 24-hour Customer Care. Alternatively, you may like to contact us by e-mail through the. <br /><br />';
         htmlEmailContent = htmlEmailContent + 'Looking forward to more opportunities to be of service to you.<br><br>';
-        htmlEmailContent = htmlEmailContent + 'Sincerely, <br>MY Bank Credit Cards Team."';
+        htmlEmailContent = htmlEmailContent + 'Sincerely, <br>MY Bank Credit Cards Team.';
         htmlEmailContent = htmlEmailContent + '</font></td></tr><tr><td style="text-align:justify"><font face="zurich bt" color="#333333" style="font-size:16px"><br />';
         htmlEmailContent = htmlEmailContent + 'This is a system generated mail. Please do not reply to this e-mail ID.<br /><br />';
         htmlEmailContent = htmlEmailContent + 'Discover a new way of paying your Credit Card bills from your bank account anytime anywhere by using MY Bank iMobile. GPRS users, SMS iMobile to 555555555. <br>';
