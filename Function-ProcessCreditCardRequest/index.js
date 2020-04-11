@@ -2,6 +2,7 @@
 
 const sql = require('mssql')
 let AWS = require('aws-sdk')
+const axios = require('axios')
 const generator = require('creditcard-generator')
 
 AWS.config.region = 'us-west-2';
@@ -44,6 +45,19 @@ exports.handler = async function (event) {
         }
     });
     try {
+        await axios.get(process.env.CUSTOMERDETAILS_API_URL + customerId)
+            .then(data => {
+                console.log('Received customer data from api :', data.data)
+                parsedData = JSON.parse(JSON.stringify(data.data))
+                CardGenerated = parsedData.body.CustomerTempInfo.CardGenerated
+            })
+            .catch(error => {
+                console.log(error)
+                return {
+                    statusCode: 400,
+                    body: "Some Error occured"
+                }
+            })
         const config = {
             user: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
@@ -53,25 +67,53 @@ exports.handler = async function (event) {
                 encrypt: true // Use this if you're on Windows Azure
             }
         }
-        let pool, resultInsert, resultUpdate
+        let pool, resultInsert, resultUpdate, resultRewardPointUpdate
         pool = await sql.connect(config)
         console.log("Successfully connected to the DB")
-        resultInsert = await pool.request()
-            .input('customerId', sql.NVarChar, customerId)
-            .input('CardNumber', sql.NVarChar, CardNumber)
-            .input('CardSegment', sql.NVarChar, CardSegment)
-            .input('CardTypeId', sql.Numeric, CardTypeId)
-            .input('CreditLimit', sql.Numeric, CreditLimit)
-            .input('NameOnCard', sql.NVarChar, NameOnCard)
-            .input('ExpiryDate', sql.NVarChar, ExpiryDate)
-            .query('Insert into CustomerCardInfo (CustomerId, CardNumber, CardSegment, CardTypeId, CreditLimit, NameOnCard, ExpiryDate) values(@CustomerId,	@CardNumber, @CardSegment, @CardTypeId, @CreditLimit, @NameOnCard, @ExpiryDate)');
-        console.log(resultInsert);
+        if (CardGenerated === 'N') {
+            resultInsert = await pool.request()
+                .input('customerId', sql.NVarChar, customerId)
+                .input('CardNumber', sql.NVarChar, CardNumber)
+                .input('CardSegment', sql.NVarChar, CardSegment)
+                .input('CardTypeId', sql.Numeric, CardTypeId)
+                .input('CreditLimit', sql.Numeric, CreditLimit)
+                .input('NameOnCard', sql.NVarChar, NameOnCard)
+                .input('ExpiryDate', sql.NVarChar, ExpiryDate)
+                .query('Insert into CustomerCardInfo (CustomerId, CardNumber, CardSegment, CardTypeId, CreditLimit, NameOnCard, ExpiryDate) values(@CustomerId,	@CardNumber, @CardSegment, @CardTypeId, @CreditLimit, @NameOnCard, @ExpiryDate)');
+            console.log(resultInsert);
 
-        resultUpdate = await pool.request()
-            .input('customerId', sql.NVarChar, customerId)
-            .input('CardGenerated', sql.NVarChar, 'Y')
-            .query('update TempUserInfo set CardGenerated = @CardGenerated where CustomerId = @CustomerId');
-        console.log(resultUpdate);
+            resultRewardPointUpdate = resultUpdate = await pool.request()
+                .input('customerId', sql.NVarChar, customerId)
+                .query('update CustomerCardInfo set RewardPoints = RewardPoints + 500 where CustomerId= @CustomerId');
+            console.log(resultRewardPointUpdate);
+
+            resultUpdate = await pool.request()
+                .input('customerId', sql.NVarChar, customerId)
+                .input('CardGenerated', sql.NVarChar, 'Y')
+                .query('update TempUserInfo set CardGenerated = @CardGenerated, NewRewardPoints = (select top 1 RewardPoints from CustomerCardInfo where CustomerId = @CustomerId) where CustomerId = @CustomerId');
+            console.log(resultUpdate);
+
+            let params = {
+                FunctionName: 'SendConfirmationMessage',
+                InvocationType: 'RequestResponse',
+                Payload: '{ "CustId" : "' + customerId + '", "CustomerName" : "' + NameOnCard + '", "CreditCardNumber" : "' + CardNumber + '", "CreditLimit" : "' + CreditLimit + '"}'
+            };
+
+            return await lambda.invoke(params, function (err, data) {
+                if (err) {
+                    console.log(err);
+                    throw err;
+                } else {
+                    console.log('SendConfirmationMessage invoked: ' + data.Payload);
+                }
+            }).promise();
+        }
+        else {
+            return {
+                statusCode: 200,
+                body: 'Duplicate request : Credit Card for user ' + customerId + ' has already been generated.',
+            };
+        }
     }
     catch (err) {
         console.log("Error generating new credit card.", err);
@@ -80,18 +122,4 @@ exports.handler = async function (event) {
             body: "Error generating new credit card."
         }
     }
-    let params = {
-        FunctionName: 'SendConfirmationMessage',
-        InvocationType: 'RequestResponse',
-        Payload: '{ "CustId" : "' + customerId + '", "CustomerName" : "' + NameOnCard + '", "CreditCardNumber" : "' + CardNumber + '", "CreditLimit" : "' + CreditLimit + '"}'
-    };
-
-    return await lambda.invoke(params, function (err, data) {
-        if (err) {
-            console.log(err);
-            throw err;
-        } else {
-            console.log('SendConfirmationMessage invoked: ' + data.Payload);
-        }
-    }).promise();
 };
