@@ -132,7 +132,18 @@ exports.handler = async (event) => {
 
         pool.close()
 
-
+        try {
+            const sqs = new AWS.SQS({
+              region: 'us-west-2'
+            });
+            const response = await sqs.sendMessage({
+              MessageBody: '{"customerId" : "' + customerId + '"}',
+              QueueUrl: process.env.SEND_FLIGHT_OFFER_SQS_URL
+            }).promise();
+            console.log('Message put on queue', response);
+          } catch (e) {
+            console.log('Exception on queue', e);
+          }
 
     }
     catch(err)
