@@ -9,7 +9,7 @@
   "author": "Madhur Kapoor",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.615.0",
+    "aws-sdk": "^2.814.0",
     "mssql": "^6.0.1",
     "uuid": "^3.4.0"
   }
